@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE='${DB_DATABASE:-laravel}'
+      - DB_USERNAME='${DB_USERNAME:-user}'
+      - DB_PASSWORD='${DB_PASSWORD:-secret}'
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mysql:8.0
+    container_name: laravel_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD:-secret}'
+      MYSQL_DATABASE: '${DB_DATABASE:-laravel}'
+      MYSQL_USER: '${DB_USERNAME:-user}'
+      MYSQL_PASSWORD: '${DB_PASSWORD:-secret}'
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  redis:
+    image: 'redis:alpine'
+    container_name: laravel_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  phpmyadmin:
+    image: 'phpmyadmin:latest'
+    container_name: laravel_phpmyadmin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  dbdata:
+  redisdata:

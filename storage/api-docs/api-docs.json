@@ -1,0 +1,685 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API для биллинга",
+        "description": "Этот API предоставляет систему биллинга, в которой пользователи могут зарегистрироваться, проверять свой баланс, выполнять транзакции (пополнение/снятие) и просматривать историю транзакций. Все операции проходят проверку, исключая возможность отрицательного баланса.",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Локальный сервер для разработки API биллинга."
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Аутентификация"
+                ],
+                "summary": "Регистрация нового пользователя",
+                "description": "Этот метод позволяет зарегистрировать нового пользователя в системе.",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Имя пользователя (от 3 до 20 символов)",
+                                        "type": "string",
+                                        "example": "Иван Иванов"
+                                    },
+                                    "email": {
+                                        "description": "Уникальный email пользователя",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ivan@example.com"
+                                    },
+                                    "password": {
+                                        "description": "Пароль (минимум 8 символов)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Подтверждение пароля",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная регистрация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "messaged": {
+                                            "description": "Сообщение о результате операции",
+                                            "type": "string",
+                                            "example": "Registered"
+                                        },
+                                        "token": {
+                                            "description": "Токен аутентификации",
+                                            "type": "string",
+                                            "example": "3|QRkUnUf2syjUmOyvSiO8p6hjaZaeOnHJPuwgkunL7f07d3b2"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Описание ошибки",
+                                            "type": "string",
+                                            "example": "Поле email является обязательным."
+                                        },
+                                        "errors": {
+                                            "description": "Детализированные ошибки валидации",
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "Поле email является обязательным."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Аутентификация"
+                ],
+                "summary": "Вход пользователя в систему",
+                "description": "Этот метод используется для входа пользователя в систему с использованием email и пароля.",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Email пользователя",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "ivan@example.com"
+                                    },
+                                    "password": {
+                                        "description": "Пароль пользователя (минимум 8 символов)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешный вход",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "messaged": {
+                                            "description": "Сообщение о результате операции",
+                                            "type": "string",
+                                            "example": "Logged In"
+                                        },
+                                        "token": {
+                                            "description": "Токен аутентификации",
+                                            "type": "string",
+                                            "example": "3|QRkUnUf2syjUmOyvSiO8p6hjaZaeOnHJPuwgkunL7f07d3b2"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "messaged": {
+                                            "description": "Сообщение об ошибке",
+                                            "type": "string",
+                                            "example": "The email or password is incorrect"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Описание ошибки",
+                                            "type": "string",
+                                            "example": "Поле email является обязательным."
+                                        },
+                                        "errors": {
+                                            "description": "Детализированные ошибки валидации",
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "Поле email является обязательным."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/transaction/deposit": {
+            "post": {
+                "tags": [
+                    "Транзакции"
+                ],
+                "summary": "Пополнение баланса",
+                "description": "Этот метод позволяет пользователю отправить запрос на пополнение баланса. Транзакция обрабатывается в фоновом режиме.",
+                "operationId": "64238b3c8935b38e8d11a5e604e14e7d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "description": "Сумма пополнения (минимум 1)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Запрос на снятие успешно отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "description": "Сообщение о результате операции",
+                                            "type": "string",
+                                            "example": "Your diposit request is being processed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Описание ошибки",
+                                            "type": "string",
+                                            "example": "Поле amount является обязательным."
+                                        },
+                                        "errors": {
+                                            "description": "Детализированные ошибки валидации",
+                                            "type": "object",
+                                            "example": {
+                                                "amount": [
+                                                    "Поле amount является обязательным."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Сообщение об ошибке аутентификации",
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/transaction/withdraw": {
+            "post": {
+                "tags": [
+                    "Транзакции"
+                ],
+                "summary": "Снятие средств",
+                "description": "Этот метод позволяет пользователю отправить запрос на снятие средств. Транзакция обрабатывается в фоновом режиме.",
+                "operationId": "d1884a7aacc81dd693cc624e72e75a63",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "description": "Сумма пополнения (минимум 1)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Запрос на снятие успешно отправлен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "description": "Сообщение о результате операции",
+                                            "type": "string",
+                                            "example": "Your withdraw request is being processed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Описание ошибки",
+                                            "type": "string",
+                                            "example": "Поле amount является обязательным."
+                                        },
+                                        "errors": {
+                                            "description": "Детализированные ошибки валидации",
+                                            "type": "object",
+                                            "example": {
+                                                "amount": [
+                                                    "Поле amount является обязательным."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Сообщение об ошибке аутентификации",
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/transaction/history": {
+            "get": {
+                "tags": [
+                    "Транзакции"
+                ],
+                "summary": "История транзакций",
+                "description": "Этот метод позволяет пользователю получить историю транзакций, с возможностью указания ограничения на количество записей.",
+                "operationId": "59235997e6b2a8aa4b0aa8942ec37fc9",
+                "parameters": [
+                    {
+                        "name": "page_limit",
+                        "in": "query",
+                        "description": "Ограничение на количество транзакций на странице (максимум 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "История транзакций успешно получена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "content": {
+                                            "description": "Список транзакций",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "type": {
+                                                        "description": "Тип транзакции (например, депозит)",
+                                                        "type": "string",
+                                                        "example": "deposit"
+                                                    },
+                                                    "amount": {
+                                                        "description": "Сумма транзакции",
+                                                        "type": "string",
+                                                        "example": "100.00"
+                                                    },
+                                                    "description": {
+                                                        "description": "Описание транзакции",
+                                                        "type": "string",
+                                                        "example": "Deposit successful"
+                                                    },
+                                                    "created_at": {
+                                                        "description": "Дата и время создания",
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-01-31T18:32:08.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "description": "Дата и время последнего обновления",
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-01-31T18:32:08.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Описание ошибки",
+                                            "type": "string",
+                                            "example": "Поле page_limit должно быть числом."
+                                        },
+                                        "errors": {
+                                            "description": "Детализированные ошибки валидации",
+                                            "type": "object",
+                                            "example": {
+                                                "page_limit": [
+                                                    "Поле page_limit должно быть числом."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Сообщение об ошибке аутентификации",
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/info": {
+            "get": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Информация о пользователе",
+                "description": "Этот метод позволяет пользователю получить информацию о своей учетной записи, включая баланс и другие данные.",
+                "operationId": "cdf71a463c6c18c5370d453b2fbd0437",
+                "responses": {
+                    "200": {
+                        "description": "Информация о пользователе успешно получена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешности запроса",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "content": {
+                                            "description": "Информация о пользователе",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID пользователя",
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "description": "Имя пользователя",
+                                                    "type": "string",
+                                                    "example": "Dr. Savion Stroman"
+                                                },
+                                                "email": {
+                                                    "description": "Email пользователя",
+                                                    "type": "string",
+                                                    "example": "mr@test.com"
+                                                },
+                                                "created_at": {
+                                                    "description": "Дата и время создания учетной записи",
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-01-31T07:13:14.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Дата и время последнего обновления учетной записи",
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-01-31T07:13:14.000000Z"
+                                                },
+                                                "balance": {
+                                                    "description": "Баланс пользователя",
+                                                    "type": "string",
+                                                    "example": "170.00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка аутентификации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Сообщение об ошибке аутентификации",
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Используйте Bearer Token для аутентификации. Все защищенные маршруты требуют действительного токена после входа пользователя в систему.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Аутентификация",
+            "description": "Аутентификация"
+        },
+        {
+            "name": "Транзакции",
+            "description": "Транзакции"
+        },
+        {
+            "name": "Пользователь",
+            "description": "Пользователь"
+        }
+    ]
+}
