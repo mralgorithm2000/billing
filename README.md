@@ -1,66 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# REST API биллинговой системы
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Содержание
 
-## About Laravel
+1. [Обзор](#Обзор)
+2. [Возможности](#Возможности)
+3. [Требования](#Требования)
+4. [Установка и настройка](#Установка-и-настройка)
+5. [Документация API](#Документация-API)
+6. [Аутентификация](#Аутентификация)
+8. [Тестирование](#Тестирование)
+10. [Лицензия](#Лицензия)
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Обзор
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Это API биллинговой системы, разработанное с использованием Laravel 11 и MySQL/PostgreSQL. Оно позволяет пользователям регистрироваться, проверять баланс, выполнять операции по пополнению и снятию средств, а также просматривать историю транзакций. API построено по RESTful-принципам, содержит Swagger-документацию и реализует паттерн репозитория для чистого и поддерживаемого кода. Транзакции обрабатываются безопасно, исключая отрицательный баланс.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Система использует Redis для эффективного управления очередями транзакций, что повышает производительность и надежность. Кроме того, в проекте имеются автоматизированные тесты, обеспечивающие стабильность и корректность работы приложения.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Возможности
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Аутентификация пользователей** – Регистрация и безопасный вход в систему
+  
+- **Управление балансом** – Просмотр текущего баланса
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Транзакции** – Пополнение и снятие средств (нельзя уйти в минус)
 
-## Laravel Sponsors
+- **История транзакций**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Поддержка очередей** – Использует Redis для асинхронной обработки транзакций
 
-### Premium Partners
+- **Документация API (Swagger)** – Хорошо задокументированный API для удобной интеграции
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Паттерн репозитория** – Обеспечивает чистую, модульную и поддерживаемую архитектуру
 
-## Contributing
+- **Автоматизированные тесты** – Включены тесты для основных функций
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Требования
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Docker (с Docker Compose), установленный на вашей системе.
 
-## Security Vulnerabilities
+Это всё! Все остальные зависимости управляются внутри контейнеров Docker, настроенных в проекте.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Установка и настройка
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Клонирование репозитория**:
+   ```bash
+   git clone https://github.com/mralgorithm2000/billing.git
+   cd billing
+   ```
+
+2. **Соберите Docker-контейнеры**:
+    Выполните следующую команду для сборки Docker-контейнеров с использованием Dockerfile и конфигурации docker-compose.yml:
+    ```bash
+    docker-compose build
+    ```
+
+3. **Запустите Docker-контейнеры**:
+    После завершения процесса сборки, запустите контейнеры с помощью следующей команды:
+    ```bash
+    docker-compose up -d
+    ```
+    Это запустит контейнеры приложения и базы данных в фоновом режиме.
+
+4. **Запустите миграции и заполнив базу данных**
+    Выполните следующую команду для настройки базы данных и заполнения её тестовыми данными:
+    ```bash
+    docker-compose exec app php artisan migrate --seed
+    ```
+
+5. **Проверьте настройку**:
+   Теперь вы можете запустить тесты, чтобы убедиться, что всё работает корректно:
+    ```bash
+   docker-compose exec app php artisan test
+    ```
+
+6. **Запуск очередей Redis**:
+   Чтобы начать обработку очередей с использованием Redis, выполните следующую команду:
+    ```bash
+   docker-compose exec app php artisan queue:work
+    ```
+
+## Документация API
+
+Документация API доступна по адресу http://localhost:8000/api/documentation. 
+Посетите этот URL после запуска сервера, чтобы изучить методы API, параметры и ожидаемые ответы.
+
+## Аутентификация
+
+Некоторые маршруты в API, такие как выполнение транзакций, получение истории транзакций и получение информации о пользователе, требуют аутентификации. Это может быть выполнено с использованием Bearer Token. Bearer Token должен быть включён в заголовок Authorization каждого запроса для доступа к этим защищённым маршрутам.
+
+
+## Тестирование
+
+Убедитесь, что все функции работают корректно, запустив:
+
+```bash
+docker-compose exec app php artisan test
+```
+
+## Лицензия
+
+Этот проект является открытым программным обеспечением и доступен в соответствии с MIT License.
